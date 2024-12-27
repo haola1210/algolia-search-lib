@@ -1,0 +1,12 @@
+.custom-hit-list {
+  /* @apply !tw-grid sm:!tw-grid-cols-1 md:!tw-grid-cols-2 lg:!tw-grid-cols-3 xl:!tw-grid-cols-4 !tw-gap-4; */
+  @apply !tw-flex !tw-flex-wrap !tw-gap-4 tw-justify-center;
+}
+
+.custom-hit-item {
+  @apply tw-w-full tw-min-w-[364px] tw-max-w-[384px] lg:!tw-max-w-60 lg:!tw-min-w-60 md:!tw-min-w-0 !tw-mt-0 !tw-ml-0 !tw-border-none !tw-shadow-lg tw-rounded-md;
+}
+
+.popup-content {
+  @apply tw-m-auto tw-bg-white tw-p-0 tw-h-4/5 lg:tw-h-[90%] tw-w-[90%] tw-rounded-md;
+}
