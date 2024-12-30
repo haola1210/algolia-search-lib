@@ -19,7 +19,31 @@ function renderSearchModal(id: string, props: SearchModalProps) {
     createRoot(container).render(<SearchModal {...props} />);
   }
 }
+
+function renderController(
+  id: string,
+  searchPageProps: SearchPageProps,
+  searchModalProps: SearchModalProps
+) {
+  const searchPagePathnames = [
+    new URL(searchModalProps.targetUrl).pathname,
+    `${new URL(searchModalProps.targetUrl).pathname}.html`,
+  ];
+  const isSearchPage = searchPagePathnames.includes(window.location.pathname);
+  if (isSearchPage) {
+    renderSearchPage(id, searchPageProps);
+  } else {
+    renderSearchModal(id, searchModalProps);
+  }
+}
+
+// renderSearchPage("root", {
+//   // targetUrl: `${window.location.origin}/search`,
+//   resultPortalElement: document.getElementById("result-container")!,
+// });
+
 export const AlgoliaSearch = {
   renderSearchPage,
   renderSearchModal,
+  renderController,
 };

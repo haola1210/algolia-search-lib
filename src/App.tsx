@@ -42,20 +42,24 @@ function HitComponent({ hit }: HitComponentProps) {
         className="tw-w-28  lg:tw-w-52 tw-aspect-square tw-object-contain"
       />
       <section className="">
-        <p className="tw-text-zinc-700 tw-opacity-80 tw-font-semibold tw-text-xs tw-uppercase tw-pb-1">
+        <p className="tw-text-zinc-700 tw-opacity-80 tw-font-semibold tw-text-base tw-uppercase tw-pb-1">
           {hit.categories?.[0]?.name}
         </p>
 
-        <h5 className="tw-text-sm tw-font-bold tw-line-clamp-2 tw-w-full">
+        <h5 className="tw-text-lg tw-font-bold tw-line-clamp-2 tw-w-full">
           <Highlight
             attribute="title"
             // @ts-expect-error
             hit={hit}
+            classNames={{
+              highlighted: "tw-text-lg",
+              nonHighlighted: "tw-text-lg",
+            }}
           />
         </h5>
-        <p className="tw-text-[11px] tw-italic">{hit.manufacturer}</p>
-        <p className="tw-text-sm tw-font-bold tw-text-black">
-          <span className="!tw-text-yellow-400 tw-text-[11px]">$</span>
+        <p className="tw-text-base tw-italic">{hit.manufacturer}</p>
+        <p className="tw-text-base tw-font-bold tw-text-black">
+          <span className="!tw-text-yellow-400 tw-text-sm">$</span>
           {hit.price}
         </p>
       </section>
@@ -88,7 +92,12 @@ export function SearchPage({
         }}
       >
         <div className="tw-flex tw-justify-center">
-          <SearchBox className="tw-max-w-96 tw-minw-80 tw-w-full" />
+          <SearchBox
+            className="tw-max-w-96 tw-minw-80 tw-w-full"
+            classNames={{
+              input: "tw-h-12",
+            }}
+          />
         </div>
         {!resultPortalElement && (
           <>
@@ -131,51 +140,63 @@ export function SearchPage({
             </div>
           </>
         )}
-        {resultPortalElement &&
-          createPortal(
-            <div className="tw-flex tw-flex-col tw-items-end">
-              <div className="tw-flex tw-flex-row">
-                {showSideBar && (
-                  <div className="lg:!tw-flex-col tw-hidden lg:!tw-flex tw-pt-4 tw-gap-4 tw-min-w-60">
-                    <div className="tw-flex tw-flex-col tw-gap-2">
-                      <h6 className="tw-text-xl tw-font-bold">Category</h6>
-                      <RefinementList
-                        attribute="categories.name"
-                        showMore
-                        searchable
-                      />
-                    </div>
-                    {/* <DynamicWidgets facets={["*"]}></DynamicWidgets> */}
-                    <div className="tw-flex tw-flex-col tw-gap-2">
-                      <h6 className="tw-text-xl tw-font-bold">manufacturer</h6>
-                      <Menu attribute="manufacturer" showMore />
-                    </div>
-                  </div>
-                )}
-                <div className="tw-p-4 tw-pt-8 tw-pl-8">
-                  <Hits<HitDto>
-                    hitComponent={HitComponent}
-                    classNames={{
-                      list: "custom-hit-list",
-                      item: "custom-hit-item",
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="tw-flex tw-flex-row tw-gap-4 tw-justify-end">
-                <Pagination showFirst={false} showLast={false} padding={1} />
-                <HitsPerPage
-                  items={[
-                    { label: "8 items per page", value: 8, default: true },
-                    { label: "16 items per page", value: 16 },
-                  ]}
-                />
-              </div>
-            </div>,
-            resultPortalElement
-          )}
+        {resultPortalElement && (
+          <PortalUI
+            resultPortalElement={resultPortalElement}
+            showSideBar={showSideBar}
+          />
+        )}
       </InstantSearch>
     </div>
+  );
+}
+
+function PortalUI({ showSideBar, resultPortalElement }: SearchPageProps) {
+  const target = useRef(resultPortalElement).current;
+  const hasMounted = useRef(false);
+
+  if (!target) return null;
+  if (!hasMounted.current) {
+    target.innerHTML = "";
+    hasMounted.current = true;
+  }
+  return createPortal(
+    <div className="tw-flex tw-flex-col tw-items-end">
+      <div className="tw-flex tw-flex-row tw-w-full">
+        {showSideBar && (
+          <div className="lg:!tw-flex-col tw-hidden lg:!tw-flex tw-pt-4 tw-gap-4 tw-min-w-60">
+            <div className="tw-flex tw-flex-col tw-gap-2">
+              <h6 className="tw-text-xl tw-font-bold">Category</h6>
+              <RefinementList attribute="categories.name" showMore searchable />
+            </div>
+            {/* <DynamicWidgets facets={["*"]}></DynamicWidgets> */}
+            <div className="tw-flex tw-flex-col tw-gap-2">
+              <h6 className="tw-text-xl tw-font-bold">manufacturer</h6>
+              <Menu attribute="manufacturer" showMore />
+            </div>
+          </div>
+        )}
+        <div className="tw-p-4 tw-pt-8 tw-pl-8">
+          <Hits<HitDto>
+            hitComponent={HitComponent}
+            classNames={{
+              list: "custom-hit-list",
+              item: "custom-hit-item",
+            }}
+          />
+        </div>
+      </div>
+      <div className="tw-flex tw-flex-row tw-gap-4 tw-justify-end">
+        <Pagination showFirst={false} showLast={false} padding={1} />
+        <HitsPerPage
+          items={[
+            { label: "8 items per page", value: 8, default: true },
+            { label: "16 items per page", value: 16 },
+          ]}
+        />
+      </div>
+    </div>,
+    resultPortalElement!
   );
 }
 
@@ -195,7 +216,7 @@ export function SearchModal({ targetUrl }: SearchModalProps) {
     <Popup
       modal
       trigger={
-        <div className="tw-relative tw-max-w-96 tw-minw-80 tw-w-full tw-h-9 tw-rounded-[5px] [border:1px_solid_rgb(196,200,216)]">
+        <div className="tw-bg-white tw-relative tw-max-w-96 tw-min-w-80 tw-w-full tw-h-12 tw-rounded-[5px] [border:1px_solid_rgb(196,200,216)]">
           <svg
             className="tw-w-[14px] tw-h-[14px] tw-absolute tw-top-1/2  tw-translate-x-1/2 -tw-translate-y-1/2"
             width="10"
@@ -224,9 +245,12 @@ export function SearchModal({ targetUrl }: SearchModalProps) {
               <SearchBox
                 className="tw-max-w-96 tw-minw-80 tw-w-full"
                 onSubmit={nagivate}
+                classNames={{
+                  input: "tw-h-12",
+                }}
               />
             </div>
-            <div className="tw-italic tw-text-sm tw-p-4 tw-pb-0 tw-pt-2">
+            <div className="tw-italic tw-text-base tw-p-4 tw-pb-0 tw-pt-2">
               <span className="tw-not-italic tw-font-bold tw-underline">
                 Tip
               </span>

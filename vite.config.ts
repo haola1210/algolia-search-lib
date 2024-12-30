@@ -8,7 +8,7 @@ export default defineConfig({
     lib: {
       entry: "./src/main.tsx", // Entry file for your component
       name: "AlgoliaSearch",
-      fileName: "algoliasearch",
+      fileName: (format) => `algoliasearch.${format}.js`,
       formats: ["umd"], // Universal Module Definition
     },
     rollupOptions: {
@@ -18,10 +18,13 @@ export default defineConfig({
           react: "React",
           "react-dom": "ReactDOM",
         },
+        entryFileNames: `algoliasearch.umd.js`, // This controls JS file name
+        assetFileNames: `algoliasearch.[ext]`,
       },
     },
   },
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"), // Or "development"
+    // "process.env.NODE_ENV": JSON.stringify("development"), // Or "development"
   },
 });
