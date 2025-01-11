@@ -52,7 +52,7 @@ function renderController(
 // );
 
 export const AlgoliaSearch = {
-  renderSearchPage,
-  renderSearchModal,
+  // renderSearchPage,
+  // renderSearchModal,
   renderController,
 };

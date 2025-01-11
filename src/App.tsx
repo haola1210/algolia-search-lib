@@ -17,6 +17,7 @@ import {
   UseClearRefinementsProps,
   useCurrentRefinements,
   UseCurrentRefinementsProps,
+  useInstantSearch,
   useMenu,
   UseMenuProps,
   useRange,
@@ -28,22 +29,41 @@ import "reactjs-popup/dist/index.css";
 import "./App.css";
 import { HitDto } from "./types";
 import { createPortal } from "react-dom";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 const appID = import.meta.env.VITE_APP_ID;
 const apiKey = import.meta.env.VITE_API_KEY;
 const searchClient = algoliasearch(appID, apiKey);
+const indexKey = "product_index_2";
 
 interface HitComponentProps {
   hit: Hit<HitDto>;
 }
 
 function HitComponent({ hit }: HitComponentProps) {
+  const { uiState } = useInstantSearch();
+
+  const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { configure, ...persistedState } = uiState[indexKey];
+    sessionStorage.setItem("searchState", JSON.stringify(persistedState));
+    window.location.href = hit.url;
+  };
+
   return (
     <a
       href={hit.url}
       className="tw-gap-2 !tw-flex !tw-flex-row lg:!tw-flex-col tw-w-full tw-h-full"
       title={hit.title}
+      onClick={handleClick}
     >
       {/* <img src={hit.image} alt={hit.title} /> */}
       <img
@@ -174,6 +194,26 @@ export function RangeSlider({ attribute, label }: RangeSliderProps) {
   );
 }
 
+function RestoreSavedSearch() {
+  const { setUiState } = useInstantSearch();
+
+  useEffect(() => {
+    console.log("check");
+    const savedState = sessionStorage.getItem("searchState");
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      setUiState((prev) => ({
+        ...prev,
+        [indexKey]: {
+          ...prev[indexKey],
+          ...parsedState,
+        },
+      }));
+    }
+  }, []);
+  return <></>;
+}
+
 export interface SearchPageProps {
   showSideBar?: boolean;
   resultPortalElement?: HTMLElement;
@@ -187,9 +227,9 @@ export function SearchPage({
     <div className="tw-p-4">
       <InstantSearch
         searchClient={searchClient}
-        indexName="product_index_2"
+        indexName={indexKey}
         initialUiState={{
-          product_index_2: (() => {
+          [indexKey]: (() => {
             const params = new URLSearchParams(window.location.search);
             const initialQuery = params.get("query") || "";
             return {
@@ -205,6 +245,7 @@ export function SearchPage({
             "categories.name:-Case Accessories",
           ]}
         />
+        <RestoreSavedSearch />
         <div className="tw-flex tw-justify-center">
           <SearchBox
             className="tw-max-w-96 tw-minw-80 tw-w-full"
