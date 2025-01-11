@@ -50,4 +50,8 @@ export interface HitDto {
   categories: Category[];
   objectID: string;
   _highlightResult: HighlightResults;
+  attr_width: null | number;
+  attr_height: null | number;
+  attr_depth: null | number;
+  attr_dimension: null | string;
 }

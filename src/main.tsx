@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import "./index.css";
+import "./index.scss";
 import {
   SearchPage,
   SearchModal,
@@ -31,16 +31,25 @@ function renderController(
   ];
   const isSearchPage = searchPagePathnames.includes(window.location.pathname);
   if (isSearchPage) {
+    if (searchPageProps.resultPortalElement) {
+      searchPageProps.resultPortalElement.classList.add("tw-root"); // Add tw-root to get the base css
+    }
     renderSearchPage(id, searchPageProps);
   } else {
     renderSearchModal(id, searchModalProps);
   }
 }
 
-// renderSearchPage("root", {
-//   // targetUrl: `${window.location.origin}/search`,
-//   resultPortalElement: document.getElementById("result-container")!,
-// });
+// renderController(
+//   "root",
+//   {
+//     // targetUrl: `${window.location.origin}/search`,
+//     resultPortalElement: document.getElementById("result-container")!,
+//   },
+//   {
+//     targetUrl: `${window.location.origin}/search`,
+//   }
+// );
 
 export const AlgoliaSearch = {
   renderSearchPage,
