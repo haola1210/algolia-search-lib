@@ -28,7 +28,6 @@ import "reactjs-popup/dist/index.css";
 import "./App.css";
 import { HitDto } from "./types";
 import { createPortal } from "react-dom";
-import Popup from "reactjs-popup";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const appID = import.meta.env.VITE_APP_ID;
@@ -417,94 +416,28 @@ export interface SearchModalProps {
 }
 
 export function SearchModal({ targetUrl }: SearchModalProps) {
-  const queryRef = useRef("");
   const nagivate = useCallback(() => {
-    const url = new URL(targetUrl);
-    url.searchParams.set("query", queryRef.current);
-    window.location.href = url.toString();
+    window.location.href = targetUrl;
   }, [targetUrl]);
 
   return (
-    <Popup
-      modal
-      trigger={
-        <div className="tw-bg-white tw-relative tw-max-w-96 tw-min-w-80 tw-w-full tw-h-12 tw-rounded-[5px] [border:1px_solid_rgb(196,200,216)]">
-          <svg
-            className="tw-w-[14px] tw-h-[14px] tw-absolute tw-top-1/2  tw-translate-x-1/2 -tw-translate-y-1/2"
-            width="10"
-            height="10"
-            viewBox="0 0 40 40"
-            aria-hidden="true"
-          >
-            <path d="M26.804 29.01c-2.832 2.34-6.465 3.746-10.426 3.746C7.333 32.756 0 25.424 0 16.378 0 7.333 7.333 0 16.378 0c9.046 0 16.378 7.333 16.378 16.378 0 3.96-1.406 7.594-3.746 10.426l10.534 10.534c.607.607.61 1.59-.004 2.202-.61.61-1.597.61-2.202.004L26.804 29.01zm-10.426.627c7.323 0 13.26-5.936 13.26-13.26 0-7.32-5.937-13.257-13.26-13.257C9.056 3.12 3.12 9.056 3.12 16.378c0 7.323 5.936 13.26 13.258 13.26z"></path>
-          </svg>
-        </div>
-      }
-      position={"center center"}
+    <div
+      className="tw-bg-white tw-relative tw-max-w-96 tw-min-w-80 tw-w-full tw-h-12 tw-rounded-[5px] [border:1px_solid_rgb(196,200,216)]"
+      onClick={nagivate}
     >
-      <div className="tw-p-4 tw-h-full">
-        <InstantSearch
-          searchClient={searchClient}
-          indexName="product_index_2"
-          onStateChange={({ uiState, setUiState }) => {
-            //@ts-expect-error
-            queryRef.current = uiState.product_index_2.query;
-            setUiState(uiState);
-          }}
-        >
-          <Configure
-            filters="hide!=1 AND NOT product_status:'Discontinued'"
-            optionalFilters={[
-              "manufacturer:SKB Cases",
-              "categories.name:-Case Accessories",
-            ]}
-          />
-
-          <div className="tw-flex tw-flex-col tw-h-full">
-            <div className="tw-flex tw-justify-center">
-              <SearchBox
-                className="tw-max-w-96 tw-minw-80 tw-w-full"
-                onSubmit={nagivate}
-                classNames={{
-                  input: "tw-h-12 !tw-px-6",
-                }}
-                placeholder="Enter search"
-              />
-            </div>
-            <div className="tw-italic tw-text-base tw-p-4 tw-pb-0 tw-pt-2">
-              <span className="tw-not-italic tw-font-bold tw-underline">
-                Tip
-              </span>
-              : Press{" "}
-              <span className="tw-not-italic tw-font-bold tw-text-red-600">
-                Enter
-              </span>{" "}
-              or click{" "}
-              <span
-                onClick={nagivate}
-                className="tw-font-bold tw-text-sky-600 tw-underline tw-cursor-pointer"
-              >
-                here
-              </span>{" "}
-              to go to the advanced search page.
-            </div>
-
-            <div className="tw-p-4 tw-pt-8 tw-pl-8 tw-overflow-auto tw-flex-grow tw-my-4">
-              <Hits<HitDto>
-                hitComponent={HitComponent}
-                classNames={{
-                  list: "custom-hit-list",
-                  item: "custom-hit-item",
-                }}
-              />
-            </div>
-            <div className="tw-flex tw-flex-row tw-gap-4 tw-justify-end">
-              <Pagination showFirst={false} showLast={false} padding={1} />
-            </div>
-          </div>
-        </InstantSearch>
-      </div>
-    </Popup>
+      <svg
+        className="tw-w-[14px] tw-h-[14px] tw-absolute tw-top-1/2  tw-translate-x-1/2 -tw-translate-y-1/2"
+        width="10"
+        height="10"
+        viewBox="0 0 40 40"
+        aria-hidden="true"
+      >
+        <path d="M26.804 29.01c-2.832 2.34-6.465 3.746-10.426 3.746C7.333 32.756 0 25.424 0 16.378 0 7.333 7.333 0 16.378 0c9.046 0 16.378 7.333 16.378 16.378 0 3.96-1.406 7.594-3.746 10.426l10.534 10.534c.607.607.61 1.59-.004 2.202-.61.61-1.597.61-2.202.004L26.804 29.01zm-10.426.627c7.323 0 13.26-5.936 13.26-13.26 0-7.32-5.937-13.257-13.26-13.257C9.056 3.12 3.12 9.056 3.12 16.378c0 7.323 5.936 13.26 13.258 13.26z"></path>
+      </svg>
+      <span className="tw-absolute tw-top-1/2 tw-left-6 -tw-translate-y-1/2 tw-text-black/50">
+        Enter search
+      </span>
+    </div>
   );
 }
 
