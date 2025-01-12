@@ -322,6 +322,7 @@ function CustomClearRefinements(props: UseClearRefinementsProps) {
       disabled={!canRefine}
       onClick={(e) => {
         e.preventDefault();
+        sessionStorage.removeItem("searchState");
         refine();
       }}
     >
